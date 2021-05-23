@@ -1,6 +1,6 @@
 # scala
 
-Yo! Welcome here, I'll use this repo to note down some concepts and maybe a little bit of code to better understand this bad boi.
+Yo! Welcome here, I'll use this repo to note some concepts down and maybe a little bit of code to better understand this bad boi.
 
 ## Evaluation of expressions
 
