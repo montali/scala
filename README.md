@@ -281,6 +281,138 @@ Functions' parameters can have names as in Python. For example, for a case class
 Parameters can also have default values: if we, for example, wanted to live in a JDM world, we might rewrite our case class as `Car(make: String = "Honda", horsepower: Int)`.
 Finally, functions can receive an arbitrary number of parameters using an asterisk: `def myMethod(x: Int, xs: Int*)`, in which `xs` is a list of the remaining parameters. To do the inverse in a call (i.e. supplying a list as separate parameters) you just add `: _*` in front of the list: `average(1, xs: _*)`.
 
+## Object oriented programming
+
+**Classes** are structures which allow us to define new types having attributes and methods. If we wanted to define a class for rational numbers it would look like this:
+
+```scala
+class Rational(x: Int, y: Int) {
+  def numer = x
+  def denom = y
+}
+```
+
+We call the instances of classes **objects**. To create one, we just prepend the `new` keyword as `val x = new Rational(1,2)`. Then, to access the numerator we can just call `x.numer`. Then, we may want to add standard operations to these rational numbers, like addition. We can do so by adding **methods**.
+
+```scala
+  def add(r: Rational) =
+    new Rational(numer * r.denom + r.numer * denom, denom * r.denom)
+```
+
+We can use `val`s to define things that we'll only need to instantiate on creation. For example, to simplify the number through its GCD, we can do the following:
+
+```scala
+class Rational(x: Int, y: Int) {
+  private def gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
+  private val g = gcd(x, y)
+  def numer = x / g
+  def denom = y / g
+  ...
+}
+```
+
+Pay attention to the `private` keyword: this means that `g` can only be accessed from the inside of the class. You can use the `this` keyword, but if no names overlap it is not required. The `require` function allows us to check values on the instantiation of the class: `require(y > 0, "denominator must be positive")`.
+`assert` does the same, throwing a different exception.
+The **constructors** of a class can be more than one. The default one takes the parameters of the class and executes the whole code block. Auxiliary constructors are just **methods named `this`**.
+
+```scala
+class Rational(x: Int, y: Int) {
+  def this(x: Int) = this(x, 1)
+  ...
+}
+```
+
+Using the **infix notation**, the definition of operators is pretty elegant: we just have to create a method named `+` to create the addition between instances of the class. Operators have different precedence basing on their first character.
+**Abstract classes** are a way of creating classes without their implementation: the members can have no implementation, thus no instances can be created. Then, we can use these by creating a class which `extends` the abstract one. This way, the class will be a subtype of the abstract one.
+You can `override` fields of the abstract class (the implemented ones). Objects too can extend abstract classes, creating **singletons**. **Traits** are a way of conforming to multiple _supertypes_, and are then used with the keyboard `with`:
+
+```scala
+class Square extends Shape with Planar with Movable
+```
+
+### Scala's class hierarchy
+
+Everything in Scala descends from `scala.Any`, which then branches in `AnyRef` and `AnyVal`. The first one is tied to reference types, while the latter is the base of primitive types. `Nothing` is the subtype of all the other ones. Finally, the `Null` type is the type of nulls.
+
+## Classes vs Case classes
+
+We have previously talked about classes and case classes, which are different concepts. The first difference is that when we're instantiating a class, we need to add the `new` keyword. Then, we can see that in case classes, the constructor parameters are promoted to members automatically. Equality works differently: in case classes, it just compares every attribute, while in normal classes it compares the objects' identitites. **Pattern matching** only works with case classes. Case classes, though, **cannot extend other case classes**. In the end, case classes are just normal classes in which the constructor is already defined, parameters become members, and the `isEqual`, `toString` and `hashCode` methods are already defined.
+
+## Polymorphic types
+
+If we wanted to use classes with a **generic type**, we could do so by defining a type parameter `[A]`.
+
+```scala
+abstract class Set[A] {
+  def incl(a: A): Set[A]
+  def contains(a: A): Boolean
+}
+```
+
+This works for functions too:
+
+```scala
+def singleton[A](elem: A) = new NonEmpty[A](elem, new Empty[A], new Empty[A])
+```
+
+Scala is usually able to perform **type inference**, so that instead of writing `singleton[Int](1)` you can just write `singleton(1)`. Type parameters do not affect evaluation: we can assume that they are erased before execution.
+
+### Type bounds
+
+We can use type polimorphism to bound the types that a function or class accepts. For example, if we wanted `A` to be a class extending `Animal`, we may want to add the operator `<:`>:
+
+```scala
+def selection[A <: Animal](a1: A, a2: A): A =
+  if (a1.fitness > a2.fitness) a1 else a2
+```
+
+You can also use lower bounds, specifying that `A` has to be a supertype of something:
+
+```scala
+A >: Reptile
+```
+
+Finally, you can mix things:
+
+```scala
+A >: Zebra <: Animal
+```
+
+### Covariance
+
+Now shit gets esoteric. We know that zebras are mammals, so `Zebra <: Mammal`, which makes sense. But now, what if we had a class `Field` for the field the zebra stays at? We probably would want to keep the property `Field[Zebra] <: Field[Mammal]`. The types for which this relation holds are called **covariant**. There are though situations in which we don't want this to happen. Roughly speaking, a type that accepts mutations of its elements should not be covariant.
+Scala allows us to define the variance of a type: `class C[+A]` stands for **covariance**, `class c[-A]` for **contravariance**, while `class c[A]` is **nonvariant**.
+**Functions are contravariant in the arguments, covariant in the return**.
+
+## Lazy evaluation
+
+Sometimes we'd want the tail of a list to be computed dynamically, i.e. **only if needed**. Lazy lists allow us to do exactly that. `LazyList.cons` is a constructor for these. These, instead of consisting in a full list, just provide an object of type `LazyList` with its head, and a tail which is computed when requested. The main methods are the same, so that if we now perform a `filter` on the LazyList and ask for the first result, it just gets the first one then stop computing elements of the list. Note that if `tail` is called multiple times, it will be computed multiple times. The best optimization would be saving the result after computing it the first time. This process goes by the name of **lazy evaluation**, which we can use in `val`s with the keyword `lazy`.
+
+## Type classes
+
+Classes, too, can use type parameters. If we wanted to create an InsertionSort method, we'd like to have a dynamic type of the possible objects to sort. We miss a pretty huge thing though: we don't know how to compare two arbitrary objects. Scala offers a class that represents orderings, `scala.math.Ordering[T]`. This way, to define our insertionSort we could do the following:
+
+```scala
+def insertionSort[T](xs: List[T])(ord: Ordering[T]): List[T] = {
+  def insert(y: T, ys: List[T]): List[T] =
+    … if (ord.lt(y, z)) …
+
+  … insert(y, insertionSort(ys)(ord)) …
+}
+insertionSort(nums)(Ordering.Int)
+```
+
+Adding the ordering is a little bit too verbose, though: it may be inferred from the parameter. This is what **implicit parameters** do: if the type can be inferred, the compiler will do the rest. The combination of types parametrized and implicit parameters is called **type class**.
+
+```scala
+def insertionSort[T](xs: List[T])(implicit ord: Ordering[T]): List[T] = {
+  def insert(y: T, ys: List[T]): List[T] =
+    … if (ord.lt(y, z)) …
+
+  … insert(y, insertionSort(ys)) …
+}
+```
+
 # Acknowledgements
 
 Most of these informations are based on the [scala-exercises tutorials](https://www.scala-exercises.org/).
