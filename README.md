@@ -237,6 +237,50 @@ def foo(x: Double): String =
 
 Something similar to `Option` is the `Try`, which either results in a `Success[A]` or in a `Failure`. Another useful type is `Either[A,B]`, which is pretty self-explainatory and can either be a `Left` or a `Right`. You can apply maps and flatMaps to `Either`s, but they will only work on the right case.
 
+## Syntactic sugar
+
+### String interpolation
+
+The following things are not technically useful: they are just pretty. For example, **string interpolation** allows you to insert variables inside of strings, like Python's f-strings: `s"Dio $animal"` is able to insert a predefined animal into the curse phrase. You can even use complex expressions through braces: `s"Dio ${animal.toUpperCase}"`.
+
+### Tuples
+
+Scala offers **tuples** too, with the standard notation `(Int, String)`. You can then manipulate these using pattern matching (`case (i,s)`), variable instantiation (`val (i,s) = tuple`) or specific identifiers `_1`, `_2`, `_3` and so on.
+What one wouldn't expect is that functions are actually treated as objects: they are just implementing a trait (namely, `Function1` for functions with 1 argument, `Function2` for two arguments and so on) and having a sole method `apply`.
+So, in the end, calling a function as `f(a,b)` is actually equal to `f.apply(a,b)`.
+
+### For expressions
+
+**for** expressions are just the syntactically elegant way of using maps, flatMaps and filters. The `for`-version of `xs.map(x => x + 1)` is just
+
+```scala
+for (x <- xs) yield x + 1
+```
+
+while the `filter` gets translated to
+
+```scala
+for (x <- xs if x % 2 == 0) yield x
+```
+
+If we now wanted to create a filterMap, we would just need the unification of the two above:
+
+```scala
+for (x <- xs if x % 2 == 0) yield (x+1)
+```
+
+Finally, to translate the `flatMap` that creates tuples from two lists `xs.flatMap(x => ys.map(y => (x, y)))` we can just do the following:
+
+```scala
+for (x <- xs; y <- ys) yield (x, y)
+```
+
+### Parameters sugar
+
+Functions' parameters can have names as in Python. For example, for a case class `Car(make: String, horsepower: Int)` we could instantiate a variable with `Car(make="Honda", horsepower=129)`.
+Parameters can also have default values: if we, for example, wanted to live in a JDM world, we might rewrite our case class as `Car(make: String = "Honda", horsepower: Int)`.
+Finally, functions can receive an arbitrary number of parameters using an asterisk: `def myMethod(x: Int, xs: Int*)`, in which `xs` is a list of the remaining parameters. To do the inverse in a call (i.e. supplying a list as separate parameters) you just add `: _*` in front of the list: `average(1, xs: _*)`.
+
 # Acknowledgements
 
 Most of these informations are based on the [scala-exercises tutorials](https://www.scala-exercises.org/).
