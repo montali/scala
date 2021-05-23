@@ -159,6 +159,84 @@ def sumCubes(a: Int, b: Int) = sum(x => x*x, a, b)
 
 ## Standard library
 
+**Lists** are a pretty huge thing for Scala programmers. Nobody knows why. Lists are **immutable**, i.e. the elements cannot be changed, recursive, and homogeneous. With this last term we mean that lists have to be of the same type, though scala's typing allows us to use `Any` as type. A list with elements of type `T` is defined as `List[T]`, for example:
+
+```scala
+val names: List[String] = List("Simmy", "Gesù", "Gianni")
+```
+
+All lists are construced from `Nil`, the empty list, and the construction operator `::`, followed by the tail.
+Therefore, the `names` list is equal to `"Simmy" :: ("Gesù" :: ("Gianni" :: Nil))`.
+Note that operators ending in `:` associate to the right, meaning that we may remove the parenthesis from the expression. They are seen as method calls of the right operand, so the above expression is actually equal to `Nil.::("Gianni").::("Gesù").::("Simmy")`.
+We can use **pattern matching** to decompose lists! Look at the following example:
+
+```scala
+nums match {
+  // Lists of `Int` that starts with `1` and then `2`
+  case 1 :: 2 :: xs => …
+  // Lists of length 1
+  case x :: Nil => …
+  // Same as `x :: Nil`
+  case List(x) => …
+  // The empty list, same as `Nil`
+  case List() =>
+  // A list that contains as only element another list that starts with `2`
+  case List(2 :: xs) => …
+}
+```
+
+We could use this in an insertion sort algorithm, as following:
+
+```scala
+def insertionSort(xs: List[Int]): List[Int] = xs match {
+  case List() => List()
+  case y :: ys => insert(y, insertionSort(ys))
+}
+```
+
+### List operators
+
+We can **transform** the elements of a list using `map`, which **applies a function to the elements**:
+
+```scala
+List(1, 2, 3).map(x => x + 1) == List(2, 3, 4)
+```
+
+We could filter elements using `filter`:
+
+```scala
+List(1, 2, 3).filter(x => x % 2 == 0) == List(2)
+```
+
+And finally, we could apply a joint map+flatten with `flatMap`:
+
+```scala
+val xs =
+  List(1, 2, 3).flatMap { x =>
+    List(x, 2 * x, 3 * x)
+  }
+xs == List(1, 2, 3, 2, 4, 6, 3, 6, 9)
+```
+
+Scala provides the `Option` type, which can either represent a `None` type or `Some`:
+
+```scala
+def sqrt(x: Double): Option[Double] =
+  if (x < 0) None else Some(…)
+```
+
+which we can later use in pattern matching:
+
+```scala
+def foo(x: Double): String =
+  sqrt(x) match {
+    case None => "no result"
+    case Some(y) => y.toString
+  }
+```
+
+Something similar to `Option` is the `Try`, which either results in a `Success[A]` or in a `Failure`. Another useful type is `Either[A,B]`, which is pretty self-explainatory and can either be a `Left` or a `Right`. You can apply maps and flatMaps to `Either`s, but they will only work on the right case.
+
 # Acknowledgements
 
 Most of these informations are based on the [scala-exercises tutorials](https://www.scala-exercises.org/).
