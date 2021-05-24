@@ -4,7 +4,7 @@ Yo! Welcome here, I'll use this repo to note some concepts down and maybe a litt
 
 ## Evaluation of expressions
 
-Expressions are evaluated by taking the leftmost operator, evaluating its operands, then applying it. Note that methods with no parameters **can be called without the `()`**. The **infix notation** is what allow you to transform a `1.to(10)` to a `1 to 10`. It's what we do with arithmetic operands, for instance: `1 + 3` would actually be `1.+(3)` in a cruel world. Types in Scala start with an uppercase letter.
+Expressions are evaluated by taking the leftmost operator, evaluating its operands, then applying it. Note that methods with no parameters **can be called without the `()`**. The **infix notation** is what allows you to transform a `1.to(10)` to a `1 to 10`. It's what we do with arithmetic operands, for instance: `1 + 3` would actually be `1.+(3)` in a cruel world. Types in Scala start with an uppercase letter.
 Remember that `def` are evaluated each time they're used, while `val`s are only evaluated when instantiated. Functions need an explicit return type when recursive.
 For example, a function defined as follows:
 
