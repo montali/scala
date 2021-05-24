@@ -218,6 +218,42 @@ val xs =
 xs == List(1, 2, 3, 2, 4, 6, 3, 6, 9)
 ```
 
+The _reduceLeft_ and _reduceRight_ operators allow us to reduce the array through a function. For example, to get the sum of an array, we can do
+
+```scala
+def sum (xs: List[Int]) = {
+  xs reduceLeft((x,y) => x+y)
+}
+```
+
+This would though fail if provided an empty list. To solve that, we can tweak it to always add the null element 0:
+
+```scala
+def sum (xs: List[Int]) = {
+  (0 :: xs) reduceLeft((x,y) => x+y)
+}
+```
+
+Since this is a pretty common thing, Scala provides an operator that does exactly that: _foldLeft_ (and _foldRight_):
+
+```scala
+def sum (xs: List[Int]) = {
+  (xs foldLeft 0) ((x,y) => x+y)
+}
+```
+
+## Vectors
+
+Vectors are linear structures with balanced access: this means that accessing an arbitrary element is computationally equal to accessing the head. These are implemented as trees, and are **immutable**. Note that you cannot use the `::` operator with them, you have to use `+:`, which creates a new vector with the provided element as head: `x +: list`. You can even use it to add a trailing element, but be cautious: the operator is inverted so that it becomes `x :+ list`. The `:` always points to the sequence.
+
+## Ranges
+
+**Ranges** represent sequences of evenly spaced integers.
+
+<!-- TODO: all the other collections in the slides> <!-->
+
+### Options and similar
+
 Scala provides the `Option` type, which can either represent a `None` type or `Some`:
 
 ```scala
