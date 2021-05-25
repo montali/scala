@@ -248,7 +248,21 @@ Vectors are linear structures with balanced access: this means that accessing an
 
 ## Ranges
 
-**Ranges** represent sequences of evenly spaced integers.
+**Ranges** represent sequences of evenly spaced integers. They are created with the keywords `to`, `until` and `by` (to determine the stepvalue). They are represented as objects having three fields: the two bounds and the step value.
+
+### Seq
+
+**Seq** is the common interface for the previously mentioned things. It provides some useful methods like:
+
+- `exists` to check for elements in the list
+- `forall` to check if the condition holds for every element
+- `zip` to zip two lists
+- `unzip` to split a sequence into two different arrays of pairs obtained from the two halves
+- `flatMap` applying a function `f` and concatenating the results
+- `sum` sums all the elements of a numeric collection
+- `product` computes the product of all elements
+- `max` returns the maximum of the elements
+- `min` returns the minimum of the elements
 
 <!-- TODO: all the other collections in the slides> <!-->
 
@@ -310,6 +324,58 @@ Finally, to translate the `flatMap` that creates tuples from two lists `xs.flatM
 ```scala
 for (x <- xs; y <- ys) yield (x, y)
 ```
+
+Fors can be used as queries too:
+
+```scala
+for {
+  b <- books
+  a <- b.authors
+  if a startsWith "Bird"
+} yield b.title
+```
+
+## Sets
+
+Sets are another iterable collection, with the difference that they are **unordered**, and they **do not provide duplicates**.
+
+## Maps
+
+Maps are associative arrays, i.e. they associate a key to a value. They are instantiated using the notation `->`, which is equivalent to a pair `(K,V)`.
+
+```scala
+val romanNumerals : Map[String,Int] = Map("I"->1, "II"->2)
+```
+
+Maps can be used as functions, for example `romanNumerals("I")`. To have a default value, we can use the `withDefaultValue` method:
+
+```scala
+val totalCapitalOfCountry = capitalOfCountry withDefaultValue "unknown"
+```
+
+Maps can be accessed with the `get` methods too: `capitalOfCountry get "USA"`.
+Note that concatenation of maps gives priority to the right hand operand in case of overlaps of keys.
+
+## GroupBy
+
+It is possible to partition a sequence depending on the value returned by a function applied to all elements. The `groupBy` method returns a map, with the key being the value of item in the function field, and the value being the partition of elements having that value.
+
+```scala
+val donuts: Seq[(String,Double)] = Seq(
+("Plain Donut",2.5), ("Strawberry Donut",4.2), ("Glazed Donut",3.3), ("Plain Donut",2.8), ("Glazed Donut",3.1) )
+donuts groupBy (_._1)
+// Map(Glazed Donut -> List((Glazed Donut,3.3), (Glazed Donut,3.1)),
+//     Plain Donut -> List((Plain Donut,2.5), (Plain Donut,2.8)),
+//     Strawberry Donut -> List((Strawberry Donut,4.2)))
+```
+
+## Repeated parameters
+
+If you want a variable number of parameters for a function, you can use the `*` operator, transforming the thing into a `Seq[Type]`.
+
+## Streams
+
+**Streams** are defined from a constant `Stream.empty`, and a constructor `Stream.cons`, which is similar to the list constructor `::` but doesn't immediately evaluate the second argument. The `toStream` method turns a collection into a stream.
 
 ### Parameters sugar
 
