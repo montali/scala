@@ -57,7 +57,7 @@ Note that definitions in a package are visible from other definitions of the sam
 
 ## Tail recursion
 
-Tail recursion is a concept crucial for performance of recursion. Basically, when a function is tail recursive, the stack frame is recycled across the several executions. This implies that the function can execute in constant stack space, so it's computationally similar to a loop. When is a function **tail recursive**, though? It is if and only if the last action of the function is the recursive call. For example,
+Tail recursion is a crucial concept for the performance of recursive methods. Basically, when a function is tail recursive, the stack frame is recycled across the several executions. This implies that the function can execute in constant stack space, so it's computationally similar to a loop. When is a function **tail recursive**, though? It is if and only if the last action of the function is the recursive call. For example,
 
 ```scala
 def gcd(a: Int, b: Int): Int =
