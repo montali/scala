@@ -57,7 +57,7 @@ Note that definitions in a package are visible from other definitions of the sam
 
 ## Tail recursion
 
-Tail recursion is a crucial concept for the performance of recursive methods. Basically, when a function is tail recursive, the stack frame is recycled across the several executions. This implies that the function can execute in constant stack space, so it's computationally similar to a loop. When is a function **tail recursive**, though? It is if and only if the last action of the function is the recursive call. For example,
+Tail recursion is a crucial concept for the performance of recursive methods. Basically, when a function is tail recursive, the stack frame is recycled across the several executions. This implies that the function can execute in constant stack space, so it's computationally similar to a loop. When can we say a function is **tail recursive**, though? It is if and only if the last action of the function is the recursive call. For example,
 
 ```scala
 def gcd(a: Int, b: Int): Int =
@@ -71,7 +71,7 @@ def factorial(n: Int): Int =
   if (n == 0) 1 else n * factorial(n - 1)
 ```
 
-is not, as the last action is `n * factorial(n - 1)`, involing a product and not the pure call.
+is not, as the last action is `n * factorial(n - 1)`, involving a product and not the pure call.
 One can require a function to be tail recursive by using the `@tailrec` annotation.
 If we wanted to make `factorial` tail recursive, we could introduce an _accumulator_ as follows:
 
@@ -84,7 +84,7 @@ def factorial(n:Int) : Int = {
 }
 ```
 
-Remember to import `scala.annotation.tailrec` if you want to use that annotation.
+Remember to import `scala.annotation.tailrec` if you want to use the annotation.
 
 # Structuring informations
 
