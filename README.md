@@ -401,6 +401,34 @@ for {
 } yield b.title
 ```
 
+Notice that fors will return a `Vector` when given a `Range`, but a `List` when given a `List`.
+If we have two things, like for example
+
+```scala
+for (
+  x <- (1 to 10);
+  y <- (1 to x) toList
+) yield (x, y)
+```
+
+the first one has the priority: this will return a `Vector`, while inverting the order would return a `List`.
+This type of behaviour happens even with `flatMaps`:
+
+```scala
+(1 to 10) flatMap(x=>List(x+1,x))
+```
+
+would be expected to return a `List`, but it returns a `Vector`.
+The correspondences for fors are the following (first element always has the precedence):
+
+```scala
+Set -> Set
+List -> List
+Vector -> Vector
+Range -> Vector
+Map -> Map
+```
+
 ## Parameters sugar
 
 Functions' parameters can have names as in Python. For example, for a case class `Car(make: String, horsepower: Int)` we could instantiate a variable with `Car(make="Honda", horsepower=129)`.
